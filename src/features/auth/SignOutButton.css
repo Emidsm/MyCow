@@ -1,0 +1,14 @@
+.sign-out-button {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  padding: var(--space-1) var(--space-3);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sign-out-button:hover {
+  background: var(--bg-surface-alt);
+  color: var(--text-primary);
+}

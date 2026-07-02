@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.vim/
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+*.~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Vite
+.vite/
+
+# Dexie / IndexedDB
+# (runtime browser DB, no files generated)
+
+# Supabase local dev (supabase CLI creates these)
+supabase/.temp/
+supabase/.branches/

@@ -1,0 +1,159 @@
+/*
+ * Design tokens — paleta "Cowhide".
+ * Fuente de verdad: design.md (raíz del repo). Los valores de colores,
+ * tipografía, spacing, radios y breakpoints están tomados literalmente
+ * de ahí. Ningún componente debe usar hex sueltos: todo pasa por estas
+ * variables.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500&display=swap');
+
+:root {
+  /* Tipografía (design.md #1) */
+  --font-heading: 'Inter Tight', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  /* Colores base "Cowhide" (design.md #2) */
+  --color-cow-900: #301106;
+  --color-cow-700: #4d2712;
+  --color-cow-500: #846550;
+  --color-cow-300: #bfafa2;
+  --color-cow-100: #daccc0;
+
+  /* Espaciado (design.md #3) */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Alias usados por los componentes existentes (misma escala de 4px que
+     design.md; --space-3/12px no tiene equivalente en design.md y se
+     conserva como paso intermedio propio de esta implementación). */
+  --space-1: var(--spacing-xs);
+  --space-2: var(--spacing-sm);
+  --space-3: 0.75rem;
+  --space-4: var(--spacing-md);
+  --space-5: var(--spacing-lg);
+  --space-6: var(--spacing-xl);
+
+  /* Radios de borde (design.md #4) */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Breakpoints (design.md #3, valores de referencia para media queries) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  --shadow-sm: 0 1px 2px rgba(48, 17, 6, 0.08);
+  --shadow-md: 0 4px 12px rgba(48, 17, 6, 0.12);
+
+  color-scheme: light;
+
+  /* Tema claro (design.md #2) */
+  --bg-primary: #f8f6f4;
+  --bg-surface: #daccc0;
+  --bg-surface-alt: #bfafa2;
+  --border-color: #bfafa2;
+
+  --text-primary: #301106;
+  --text-secondary: #4d2712;
+  --text-on-brand: #f8f6f4;
+
+  --brand-primary: #4d2712;
+  --brand-primary-hover: #301106;
+  --brand-secondary: #846550;
+
+  --status-online: #4b6b3a;
+  --status-offline: #a33b2c;
+  --status-pending: #c98a1c;
+  --status-danger: #a33b2c;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Tema oscuro (design.md #2) */
+  --bg-primary: #170803;
+  --bg-surface: #301106;
+  --bg-surface-alt: #4d2712;
+  --border-color: #4d2712;
+
+  --text-primary: #daccc0;
+  --text-secondary: #bfafa2;
+  --text-on-brand: #170803;
+
+  --brand-primary: #846550;
+  --brand-primary-hover: #bfafa2;
+  --brand-secondary: #bfafa2;
+
+  --status-online: #7ea363;
+  --status-offline: #d97a63;
+  --status-pending: #e0ab4c;
+  --status-danger: #d97a63;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Default a prefers-color-scheme cuando el usuario no fijó una preferencia
+   explícita (ver theme.js: sólo se setea data-theme si hay override). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='dark']) {
+    color-scheme: dark;
+    --bg-primary: #170803;
+    --bg-surface: #301106;
+    --bg-surface-alt: #4d2712;
+    --border-color: #4d2712;
+
+    --text-primary: #daccc0;
+    --text-secondary: #bfafa2;
+    --text-on-brand: #170803;
+
+    --brand-primary: #846550;
+    --brand-primary-hover: #bfafa2;
+    --brand-secondary: #bfafa2;
+
+    --status-online: #7ea363;
+    --status-offline: #d97a63;
+    --status-pending: #e0ab4c;
+    --status-danger: #d97a63;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  margin: 0;
+}
+
+button {
+  font-family: var(--font-body);
+}

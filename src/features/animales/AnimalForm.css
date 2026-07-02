@@ -1,0 +1,208 @@
+.animal-form__overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-cow-900) 55%, transparent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 20;
+}
+
+.animal-form {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  .animal-form__overlay {
+    align-items: center;
+  }
+  .animal-form {
+    border-radius: var(--radius-lg);
+    max-height: 85vh;
+  }
+}
+
+.animal-form__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.animal-form__header h2 {
+  font-size: 18px;
+}
+
+.animal-form__close {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 22px;
+  line-height: 1;
+  padding: var(--space-1) var(--space-2);
+}
+
+.animal-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.animal-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.animal-form__field input,
+.animal-form__field select,
+.animal-form__field textarea {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+.animal-form__field textarea {
+  resize: vertical;
+}
+
+.animal-form__mover {
+  align-self: flex-start;
+  border: 1px solid var(--brand-primary);
+  background: transparent;
+  color: var(--brand-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: var(--space-2);
+}
+
+.animal-form__warning {
+  color: var(--status-pending);
+  font-size: 12px;
+}
+
+.animal-form__terminal-buttons {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.animal-form__morir,
+.animal-form__vender {
+  border: 1px solid var(--status-danger);
+  background: transparent;
+  color: var(--status-danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.animal-form__terminal-note {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin: 0;
+}
+
+.animal-form__evento-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+}
+
+.animal-form__evento-detalle div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.animal-form__evento-detalle dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+}
+
+.animal-form__evento-detalle dd {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.animal-form__error {
+  color: var(--status-danger);
+  font-size: 13px;
+  margin: 0;
+}
+
+.animal-form__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
+
+.animal-form__footer-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.animal-form__retirar {
+  border: 1px solid var(--status-danger);
+  background: transparent;
+  color: var(--status-danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.animal-form__cancel {
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-size: 14px;
+}
+
+.animal-form__save {
+  border: none;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.animal-form__save:disabled,
+.animal-form__retirar:disabled,
+.animal-form__cancel:disabled {
+  opacity: 0.5;
+}
