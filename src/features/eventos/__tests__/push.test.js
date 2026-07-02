@@ -1,14 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createEngine } from '../../../sync/engine.js';
 import { create } from '../../../sync/writes.js';
-import { registrarDefuncion, registrarVenta } from '../useEventoMutations.js';
+import { registrarDefuncion } from '../useEventoMutations.js';
 import { freshDb, dropDb, createMockSupabase } from '../../../sync/__tests__/helpers.js';
 
-// defunciones/ventas comparten el mismo contrato de FK (animal_id) que
-// movimientos/historial_categoria: una FK ya sincronizada (con id real) se
-// traduce y empuja bien; una FK sin sincronizar es 'waiting_ref' (espera
-// legítima), nunca 'failed' — ver FK_FIELDS en sync/engine.js.
-describe('engine.push — defunciones/ventas con FK animal_id', () => {
+describe('engine.push — defunciones con FK animal_id', () => {
   let db;
   beforeEach(() => {
     db = freshDb();
@@ -80,25 +76,5 @@ describe('engine.push — defunciones/ventas con FK animal_id', () => {
     expect(remoteRow.animal_id).toBe('animal-real-id-tardio');
   });
 
-  it('venta con animal_id ya sincronizado: push traduce la FK y envía bien', async () => {
-    const supabase = createMockSupabase();
-    const engine = createEngine({ db, supabase, config: { maxRetries: 5, backoffBaseMs: 1000 } });
 
-    await db.animales.put({
-      client_id: 'animal-cid2', id: 'animal-real-id2',
-      categoria: 'novillo', estado_vida: 'activo',
-      updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
-    });
-
-    const venta = await registrarVenta(db, { animal_id: 'animal-cid2', fecha_venta: '2026-07-01' });
-    await db.outbox.where('entity').equals('animales').delete();
-
-    const res = await engine.push();
-
-    expect(res.pushed).toBe(1);
-    expect(res.waitingRef).toBe(0);
-
-    const [remoteRow] = supabase._tables.ventas.filter((r) => r.client_id === venta.client_id);
-    expect(remoteRow).toMatchObject({ animal_id: 'animal-real-id2' });
-  });
 });

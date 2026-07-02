@@ -6,16 +6,15 @@ import { ParentSelect } from './ParentSelect.jsx';
 import { MovimientoForm } from '../movimientos/MovimientoForm.jsx';
 import { MovimientoHistorial } from '../movimientos/MovimientoHistorial.jsx';
 import { DefuncionForm } from '../eventos/DefuncionForm.jsx';
-import { VentaForm } from '../eventos/VentaForm.jsx';
 import { useEventos } from '../eventos/useEventos.js';
 import './AnimalForm.css';
 
 // ENUMs replicados de 0001_extensions_and_enums.sql. Se hardcodean (a
 // diferencia de AnimalesFilters, que deriva opciones de datos ya cargados)
 // porque son el vocabulario cerrado del negocio, no una faceta de datos.
-const CATEGORIA_OPTIONS = ['vaca', 'semental', 'cria', 'novillo', 'novillona'];
+const CATEGORIA_OPTIONS = ['vaca', 'semental', 'cria'];
 const SEXO_OPTIONS = ['macho', 'hembra'];
-const ESTADO_REPROD_OPTIONS = ['vacia', 'cargada', 'parida', 'empadrada', 'na'];
+const ESTADO_REPROD_OPTIONS = ['horra', 'cargada', 'parida'];
 
 function emptyForm() {
   return {
@@ -26,12 +25,17 @@ function emptyForm() {
     raza: '',
     color: '',
     fecha_nacimiento: '',
-    estado_reproductivo: 'na',
+    estado_reproductivo: 'horra',
     madre_id: null,
     padre_id: null,
     potrero_actual_id: null,
     observaciones: '',
   };
+}
+
+function capitalize(s) {
+  const map = { cria: 'Cría' };
+  return map[s] ?? s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function blankToNull(value) {
@@ -52,7 +56,6 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
   const [saving, setSaving] = useState(false);
   const [movingOpen, setMovingOpen] = useState(false);
   const [deathOpen, setDeathOpen] = useState(false);
-  const [ventaOpen, setVentaOpen] = useState(false);
 
   const animales = useLiveQuery(
     () => db.animales.filter((a) => a.deleted_at == null).toArray(),
@@ -70,7 +73,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
     [db, clientId, isEdit]
   );
   const estadoVida = animalActual?.estado_vida ?? 'activo';
-  const esTerminal = estadoVida === 'muerto' || estadoVida === 'vendido';
+  const esTerminal = estadoVida === 'muerto';
   const eventos = useEventos(isEdit ? clientId : null, db);
 
   useEffect(() => {
@@ -86,7 +89,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
         raza: rec.raza ?? '',
         color: rec.color ?? '',
         fecha_nacimiento: rec.fecha_nacimiento ?? '',
-        estado_reproductivo: rec.estado_reproductivo ?? 'na',
+        estado_reproductivo: rec.estado_reproductivo ?? 'horra',
         madre_id: rec.madre_id ?? null,
         padre_id: rec.padre_id ?? null,
         potrero_actual_id: rec.potrero_actual_id ?? null,
@@ -193,7 +196,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
               <option value="">Selecciona…</option>
               {CATEGORIA_OPTIONS.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {capitalize(c)}
                 </option>
               ))}
             </select>
@@ -205,7 +208,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
               <option value="">Selecciona…</option>
               {SEXO_OPTIONS.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {capitalize(s)}
                 </option>
               ))}
             </select>
@@ -244,7 +247,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
             >
               {ESTADO_REPROD_OPTIONS.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {capitalize(s)}
                 </option>
               ))}
             </select>
@@ -300,14 +303,9 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
           {isEdit && !esTerminal && (
             <div className="animal-form__field">
               <span>Eventos terminales</span>
-              <div className="animal-form__terminal-buttons">
-                <button type="button" className="animal-form__morir" onClick={() => setDeathOpen(true)}>
-                  Registrar muerte
-                </button>
-                <button type="button" className="animal-form__vender" onClick={() => setVentaOpen(true)}>
-                  Registrar venta
-                </button>
-              </div>
+              <button type="button" className="animal-form__morir" onClick={() => setDeathOpen(true)}>
+                Registrar muerte
+              </button>
             </div>
           )}
 
@@ -315,7 +313,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
             <div className="animal-form__field">
               <span>Eventos terminales</span>
               <p className="animal-form__terminal-note">
-                Este animal está marcado como <strong>{estadoVida}</strong>: no admite mover, vender
+                Este animal está marcado como <strong>{estadoVida}</strong>: no admite mover
                 ni registrar muerte de nuevo.
               </p>
               {eventos.defuncion && (
@@ -332,28 +330,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
                   )}
                 </dl>
               )}
-              {eventos.venta && (
-                <dl className="animal-form__evento-detalle">
-                  <div>
-                    <dt>Fecha de venta</dt>
-                    <dd>{eventos.venta.fecha_venta}</dd>
-                  </div>
-                  {eventos.venta.comprador && (
-                    <div>
-                      <dt>Comprador</dt>
-                      <dd>{eventos.venta.comprador}</dd>
-                    </div>
-                  )}
-                  {eventos.venta.precio != null && (
-                    <div>
-                      <dt>Precio</dt>
-                      <dd>
-                        {eventos.venta.precio} {eventos.venta.moneda}
-                      </dd>
-                    </div>
-                  )}
-                </dl>
-              )}
+
             </div>
           )}
 
@@ -408,9 +385,6 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
         <DefuncionForm db={db} animalClientId={clientId} onClose={() => setDeathOpen(false)} />
       )}
 
-      {ventaOpen && (
-        <VentaForm db={db} animalClientId={clientId} onClose={() => setVentaOpen(false)} />
-      )}
     </div>
   );
 }

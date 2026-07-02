@@ -104,8 +104,7 @@
   gap: var(--space-2);
 }
 
-.animal-form__morir,
-.animal-form__vender {
+.animal-form__morir {
   border: 1px solid var(--status-danger);
   background: transparent;
   color: var(--status-danger);

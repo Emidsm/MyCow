@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { randomUUID } from 'node:crypto';
 import { App } from '../App.jsx';
 import { createDb } from '../sync/db.js';
@@ -77,13 +78,19 @@ describe('App — gate de sesión', () => {
     await dropDb(db);
   });
 
+  function renderApp(props) {
+    return render(
+      <MemoryRouter initialEntries={['/animales']}>
+        <App {...props} />
+      </MemoryRouter>
+    );
+  }
+
   it('sin sesión: muestra Login y NO arranca el scheduler de sync', async () => {
     const supabase = createMockSupabaseAuth(null);
     const engine = createMockEngine();
 
-    render(
-      <App supabase={supabase} db={db} engine={engine} connectivity={createMockConnectivity()} />
-    );
+    renderApp({ supabase, db, engine, connectivity: createMockConnectivity() });
 
     await waitFor(() =>
       expect(screen.getByRole('button', { name: 'Iniciar sesión' })).toBeInTheDocument()
@@ -95,9 +102,7 @@ describe('App — gate de sesión', () => {
     const supabase = createMockSupabaseAuth(null);
     const engine = createMockEngine();
 
-    render(
-      <App supabase={supabase} db={db} engine={engine} connectivity={createMockConnectivity()} />
-    );
+    renderApp({ supabase, db, engine, connectivity: createMockConnectivity() });
 
     await waitFor(() => screen.getByLabelText('Correo'));
     fireEvent.change(screen.getByLabelText('Correo'), { target: { value: 'user@rancho.com' } });
@@ -105,7 +110,7 @@ describe('App — gate de sesión', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar sesión' }));
 
     await waitFor(() => expect(engine.start).toHaveBeenCalledTimes(1));
-    expect(screen.getByText('Animales')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Animales' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Iniciar sesión' })).not.toBeInTheDocument();
   });
 
@@ -114,13 +119,11 @@ describe('App — gate de sesión', () => {
     const supabase = createMockSupabaseAuth(session);
     const engine = createMockEngine();
 
-    render(
-      <App supabase={supabase} db={db} engine={engine} connectivity={createMockConnectivity()} />
-    );
+    renderApp({ supabase, db, engine, connectivity: createMockConnectivity() });
 
     await waitFor(() => expect(engine.start).toHaveBeenCalledTimes(1));
     expect(screen.queryByRole('button', { name: 'Iniciar sesión' })).not.toBeInTheDocument();
-    expect(screen.getByText('Animales')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Animales' })).toBeInTheDocument();
   });
 
   it('signOut: vuelve a Login y NO borra el outbox/DB local (ops pendientes siguen ahí)', async () => {
@@ -138,9 +141,7 @@ describe('App — gate de sesión', () => {
       status: 'pending',
     });
 
-    render(
-      <App supabase={supabase} db={db} engine={engine} connectivity={createMockConnectivity()} />
-    );
+    renderApp({ supabase, db, engine, connectivity: createMockConnectivity() });
 
     await waitFor(() => expect(engine.start).toHaveBeenCalledTimes(1));
 

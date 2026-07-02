@@ -1,0 +1,127 @@
+.potrero-form__overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-gray-900) 55%, transparent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 20;
+}
+
+.potrero-form {
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  .potrero-form__overlay {
+    align-items: center;
+  }
+  .potrero-form {
+    border-radius: var(--radius-lg);
+    max-height: 85vh;
+  }
+}
+
+.potrero-form__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.potrero-form__header h2 {
+  font-size: 18px;
+}
+
+.potrero-form__close {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 22px;
+  line-height: 1;
+  padding: var(--space-1) var(--space-2);
+}
+
+.potrero-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.potrero-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.potrero-form__field input[type="text"] {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+.potrero-form__checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.potrero-form__checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.potrero-form__error {
+  color: var(--status-danger);
+  font-size: 13px;
+  margin: 0;
+}
+
+.potrero-form__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
+
+.potrero-form__cancel {
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-size: 14px;
+}
+
+.potrero-form__save {
+  border: none;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.potrero-form__save:disabled,
+.potrero-form__cancel:disabled {
+  opacity: 0.5;
+}

@@ -56,14 +56,14 @@ describe('AnimalForm', () => {
 
   it('precarga un animal existente en modo edición', async () => {
     await db.animales.put({
-      client_id: 'e1', arete_local: '3', categoria: 'novillo', sexo: 'macho',
+      client_id: 'e1', arete_local: '3', categoria: 'vaca', sexo: 'macho',
       updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
     });
 
     render(<AnimalForm db={db} clientId="e1" onClose={() => {}} />);
 
     expect(await screen.findByDisplayValue('3')).toBeInTheDocument();
-    expect(screen.getByLabelText('Categoría *')).toHaveValue('novillo');
+    expect(screen.getByLabelText('Categoría *')).toHaveValue('vaca');
     expect(screen.getByText('Editar animal')).toBeInTheDocument();
     expect(screen.getByText('Retirar')).toBeInTheDocument();
   });

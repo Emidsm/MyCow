@@ -1,0 +1,96 @@
+.potreros {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.potreros__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.potreros__title {
+  font-size: 22px;
+}
+
+.potreros__create {
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  padding: var(--space-2) var(--space-4);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.potreros__grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.potreros__card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  position: relative;
+}
+
+.potreros__card:hover {
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.potreros__card:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.potreros__card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.potreros__card-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.potreros__card-area {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.potreros__card-count {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-2);
+}
+
+.potreros__card-delete {
+  border: 1px solid var(--status-danger);
+  background: transparent;
+  color: var(--status-danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-1) var(--space-3);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.potreros__card-delete:hover {
+  background: color-mix(in srgb, var(--status-danger) 10%, transparent);
+}
+
+.potreros__status {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--space-6);
+}
