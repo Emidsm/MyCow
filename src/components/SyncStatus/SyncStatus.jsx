@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useSyncStatus } from '../../hooks/useSyncStatus.js';
@@ -16,6 +16,16 @@ function entityLabel(e) {
 
 function opLabel(o) {
   return { insert: 'Crear', update: 'Editar', delete: 'Retirar' }[o] ?? o;
+}
+
+function itemLabel(item) {
+  if (item.entity === 'animales' && item.payload?.arete_local) {
+    return `Arete ${item.payload.arete_local}`;
+  }
+  if (item.entity === 'potreros' && item.payload?.nombre) {
+    return item.payload.nombre;
+  }
+  return item.client_id?.slice(0, 8);
 }
 
 const ENTITY_ROUTE = {
@@ -44,6 +54,21 @@ export function SyncStatus({ db = defaultDb } = {}) {
     navigate(ENTITY_ROUTE[item.entity] ?? '/');
   }
 
+  const handleRetry = useCallback(async (item) => {
+    await db.outbox.update(item.id, { status: 'pending', attempts: 0, last_error: null, next_retry_at: null });
+  }, [db]);
+
+  const handleRetryAll = useCallback(async () => {
+    if (!pendingItems) return;
+    for (const item of pendingItems) {
+      if (item.status === 'failed') {
+        await db.outbox.update(item.id, { status: 'pending', attempts: 0, last_error: null, next_retry_at: null });
+      }
+    }
+  }, [db, pendingItems]);
+
+  const failedCount = pendingItems?.filter((i) => i.status === 'failed').length ?? 0;
+
   return (
     <div className="sync-status" data-online={isOnline}>
       <span
@@ -62,29 +87,46 @@ export function SyncStatus({ db = defaultDb } = {}) {
       )}
 
       {expanded && pendingItems && pendingItems.length > 0 && (
-        <ul className="sync-status__pending-list">
-          {pendingItems.map((item) => (
-            <li key={item.id}>
-              <button
-                className="sync-status__pending-item"
-                data-status={item.status}
-                onClick={() => handleItemClick(item)}
-              >
-                <span className="sync-status__item-op">{opLabel(item.op)}</span>
-                <span className="sync-status__item-entity">{entityLabel(item.entity)}</span>
-                <span className="sync-status__item-id">{item.client_id?.slice(0, 8)}</span>
-                {item.status === 'failed' && item.last_error && (
-                  <span className="sync-status__item-error" title={item.last_error}>
-                    {item.last_error.length > 50 ? item.last_error.slice(0, 50) + '…' : item.last_error}
-                  </span>
-                )}
-                {item.status === 'waiting_ref' && (
-                  <span className="sync-status__item-waiting">esperando referencia</span>
-                )}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="sync-status__pending-list">
+          {failedCount > 0 && (
+            <button className="sync-status__retry-all" onClick={handleRetryAll}>
+              Reintentar {failedCount} fallidas
+            </button>
+          )}
+          <ul className="sync-status__pending-items">
+            {pendingItems.map((item) => (
+              <li key={item.id} className="sync-status__pending-item" data-status={item.status}>
+                <button className="sync-status__item-main" onClick={() => handleItemClick(item)}>
+                  <span className="sync-status__item-op">{opLabel(item.op)}</span>
+                  <span className="sync-status__item-entity">{entityLabel(item.entity)}</span>
+                  <span className="sync-status__item-label">{itemLabel(item)}</span>
+                </button>
+                <div className="sync-status__item-meta">
+                  {item.status === 'failed' && item.last_error && (
+                    <span className="sync-status__item-error" title={item.last_error}>
+                      {item.last_error.length > 60 ? item.last_error.slice(0, 60) + '…' : item.last_error}
+                    </span>
+                  )}
+                  {item.status === 'waiting_ref' && (
+                    <span className="sync-status__item-waiting">esperando referencia</span>
+                  )}
+                  {item.status === 'pending' && (
+                    <span className="sync-status__item-pending">pendiente</span>
+                  )}
+                  {item.status === 'failed' && (
+                    <button
+                      className="sync-status__retry-btn"
+                      onClick={(e) => { e.stopPropagation(); handleRetry(item); }}
+                      title="Reintentar"
+                    >
+                      ↻
+                    </button>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
