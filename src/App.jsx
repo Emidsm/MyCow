@@ -41,7 +41,6 @@ function AppShell({ db, engine, connectivity }) {
   return (
     <SyncProvider db={db} engine={engine} connectivity={connectivity}>
       <div className="app">
-        <BottomNav />
         <div className="app__topbar">
           <ThemeToggle />
           <SignOutButton />
@@ -50,6 +49,7 @@ function AppShell({ db, engine, connectivity }) {
         <main className="app__content">
           <AppRoutes db={db} />
         </main>
+        <BottomNav />
       </div>
     </SyncProvider>
   );

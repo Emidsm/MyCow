@@ -6,10 +6,16 @@
 
 .app__content {
   flex: 1;
-  padding-top: calc(48px + var(--space-3));
+  padding-top: var(--space-3);
   padding-left: var(--space-3);
   padding-right: var(--space-3);
-  padding-bottom: var(--space-3);
+  padding-bottom: calc(48px + var(--space-3));
+}
+
+@media (min-width: 768px) {
+  .app__content {
+    padding-bottom: var(--space-3);
+  }
 }
 
 .app__topbar {
