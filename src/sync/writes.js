@@ -94,17 +94,34 @@ export async function update(db, entity, clientId, changes = {}) {
  * softDelete: NUNCA hard-delete. Setea deleted_at (y updated_at) y encola un
  * 'delete' que en el server se propaga como un update con deleted_at (soft).
  * La fila NO se borra ni local ni remotamente; la UI filtra deleted_at IS NULL.
+ *
+ * OPTIMIZACIÓN: si el registro tiene un 'insert' pendiente en el outbox (el
+ * server nunca lo vio), en lugar de encolar un delete que quedaría atascado
+ * esperando resolver FKs, CANCELAMOS ambas: borramos el registro local y el
+ * insert. Neto: el server nunca supo de este registro.
  */
 export async function softDelete(db, entity, clientId) {
   const ts = nowIso();
-  let updated;
 
   await db.transaction('rw', db[entity], db.outbox, async () => {
     const existing = await db[entity].get(clientId);
     if (!existing) {
       throw new Error(`softDelete: no existe ${entity} con client_id=${clientId}`);
     }
-    updated = {
+
+    // Si aún hay un insert pendiente, el server nunca recibió este registro.
+    // Cancelamos ambos en lugar de encolar un delete que se atascaría.
+    const pendingInsert = await db.outbox
+      .where({ entity, client_id: clientId, op: 'insert' })
+      .filter((o) => o.status === 'pending')
+      .first();
+    if (pendingInsert) {
+      await db[entity].delete(clientId);
+      await db.outbox.delete(pendingInsert.id);
+      return;
+    }
+
+    const updated = {
       ...existing,
       deleted_at: ts,
       updated_at: ts,
@@ -113,8 +130,6 @@ export async function softDelete(db, entity, clientId) {
     await db[entity].put(updated);
     await db.outbox.add(outboxRow(entity, 'delete', clientId, updated, ts));
   });
-
-  return updated;
 }
 
 /**

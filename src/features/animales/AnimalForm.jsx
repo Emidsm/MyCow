@@ -250,17 +250,19 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
             </p>
           )}
 
-          <div className="animal-form__field">
-            <span>Foto</span>
-            <FotoUpload
-              dataUrl={fotoPrincipalUrl}
-              onUpload={addFoto}
-              onRemove={() => {
-                const f = fotos?.[0];
-                if (f) removeFoto(f.client_id);
-              }}
-            />
-          </div>
+          {isEdit && (
+            <div className="animal-form__field">
+              <span>Foto</span>
+              <FotoUpload
+                dataUrl={fotoPrincipalUrl}
+                onUpload={addFoto}
+                onRemove={() => {
+                  const f = fotos?.[0];
+                  if (f) removeFoto(f.client_id);
+                }}
+              />
+            </div>
+          )}
 
           <label className="animal-form__field">
             <span>Raza</span>

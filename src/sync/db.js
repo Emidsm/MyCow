@@ -56,7 +56,7 @@ const SUPPORT_STORES = {
   //   id, entity, op('insert'|'update'|'delete'), client_id, payload,
   //   created_at, attempts, last_error, status('pending'|'syncing'|'failed'),
   //   next_retry_at (timestamp ms para el backoff; extensión documentada).
-  outbox: '++id, entity, status, client_id, created_at',
+  outbox: '++id, entity, status, client_id, created_at, [entity+client_id+op]',
 
   // sync_meta: pares clave/valor de metadatos de sync (p.ej. watermarks
   // last_pull_at:<entidad>).
@@ -77,7 +77,13 @@ const ALL_STORES = { ...ENTITY_STORES, ...SUPPORT_STORES };
  */
 export function createDb(name = SYNC_DB_NAME) {
   const db = new Dexie(name);
-  db.version(1).stores(ALL_STORES);
+  db.version(1).stores({
+    ...ENTITY_STORES,
+    outbox: '++id, entity, status, client_id, created_at',
+    sync_meta: 'key',
+    fotos_data: 'client_id',
+  });
+  db.version(2).stores(ALL_STORES);
   return db;
 }
 
