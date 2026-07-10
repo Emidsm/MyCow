@@ -97,25 +97,6 @@ END $$;
 
 -- ═══════════════════════════════════════════════════════════════════
 -- Storage — bucket de fotos (fotos.storage_path, ver 0002_tables.sql)
--- ═══════════════════════════════════════════════════════════════════
--- NOTA: el bucket debe crearse ANTES de aplicar esta migración.
---   1. Dashboard > Storage > Create bucket > nombre: mycow_fotos
---      (público o privado; las RLS controlan el acceso)
---   2. O via CLI: supabase storage buckets create mycow_fotos
---
--- Luego aplicar las políticas:
-
-DROP POLICY IF EXISTS authenticated_storage_select ON storage.objects;
-DROP POLICY IF EXISTS authenticated_storage_insert ON storage.objects;
-DROP POLICY IF EXISTS authenticated_storage_update ON storage.objects;
-DROP POLICY IF EXISTS authenticated_storage_delete ON storage.objects;
-
-CREATE POLICY authenticated_storage_select ON storage.objects
-  FOR SELECT TO authenticated USING (bucket_id = 'mycow_fotos');
-CREATE POLICY authenticated_storage_insert ON storage.objects
-  FOR INSERT TO authenticated WITH CHECK (bucket_id = 'mycow_fotos');
-CREATE POLICY authenticated_storage_update ON storage.objects
-  FOR UPDATE TO authenticated USING (bucket_id = 'mycow_fotos') WITH CHECK (bucket_id = 'mycow_fotos');
-CREATE POLICY authenticated_storage_delete ON storage.objects
-  FOR DELETE TO authenticated USING (bucket_id = 'mycow_fotos');
+-- NOTA: el bucket 'mycow_fotos' ya fue creado, y las RLS se
+-- aplicaron en la migración 0009_storage_bucket_rls.sql.
 -- ═══════════════════════════════════════════════════════════════════
