@@ -1,7 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db as defaultDb } from '../../sync/db.js';
 import { capitalize, categoriaLabel } from '../../utils.js';
+import { supabase } from '../../lib/supabaseClient.js';
 import './AnimalRow.css';
+
+const BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET ?? 'mycow_fotos';
 
 const DASH = '—';
 
@@ -26,6 +29,10 @@ export function AnimalRow({ animal, onClick, db = defaultDb }) {
     async () => {
       const f = await db.fotos.filter((f) => f.animal_id === animal.client_id && f.deleted_at == null).first();
       if (!f) return null;
+      if (f.storage_path) {
+        const { data: { publicUrl } } = supabase.storage.from(BUCKET).getPublicUrl(f.storage_path);
+        return publicUrl;
+      }
       const d = await db.fotos_data.get(f.client_id);
       return d?.data_url ?? null;
     },

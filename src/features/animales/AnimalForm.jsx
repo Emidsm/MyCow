@@ -78,7 +78,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
   const estadoVida = animalActual?.estado_vida ?? 'activo';
   const esTerminal = estadoVida === 'muerto';
   const eventos = useEventos(isEdit ? clientId : null, db);
-  const { fotos, fotoPrincipalData, addFoto, removeFoto } = useFotos(clientId, db);
+  const { fotos, fotoPrincipalUrl, addFoto, removeFoto } = useFotos(clientId, db);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -253,7 +253,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
           <div className="animal-form__field">
             <span>Foto</span>
             <FotoUpload
-              dataUrl={fotoPrincipalData}
+              dataUrl={fotoPrincipalUrl}
               onUpload={addFoto}
               onRemove={() => {
                 const f = fotos?.[0];
