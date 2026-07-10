@@ -7,6 +7,8 @@ import { MovimientoForm } from '../movimientos/MovimientoForm.jsx';
 import { MovimientoHistorial } from '../movimientos/MovimientoHistorial.jsx';
 import { DefuncionForm } from '../eventos/DefuncionForm.jsx';
 import { useEventos } from '../eventos/useEventos.js';
+import { useFotos } from './useFotos.js';
+import { FotoUpload } from './FotoUpload.jsx';
 import { formatDate } from '../../utils.js';
 import './AnimalForm.css';
 
@@ -76,6 +78,7 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
   const estadoVida = animalActual?.estado_vida ?? 'activo';
   const esTerminal = estadoVida === 'muerto';
   const eventos = useEventos(isEdit ? clientId : null, db);
+  const { fotos, fotoPrincipalData, addFoto, removeFoto } = useFotos(clientId, db);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -246,6 +249,18 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
               Una vaca debe ser hembra.
             </p>
           )}
+
+          <div className="animal-form__field">
+            <span>Foto</span>
+            <FotoUpload
+              dataUrl={fotoPrincipalData}
+              onUpload={addFoto}
+              onRemove={() => {
+                const f = fotos?.[0];
+                if (f) removeFoto(f.client_id);
+              }}
+            />
+          </div>
 
           <label className="animal-form__field">
             <span>Raza</span>

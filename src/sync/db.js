@@ -61,6 +61,10 @@ const SUPPORT_STORES = {
   // sync_meta: pares clave/valor de metadatos de sync (p.ej. watermarks
   // last_pull_at:<entidad>).
   sync_meta: 'key',
+
+  // fotos_data: almacén local de imágenes en base64, NO sincronizado.
+  // La clave es el client_id del registro `fotos` asociado.
+  fotos_data: 'client_id',
 };
 
 const ALL_STORES = { ...ENTITY_STORES, ...SUPPORT_STORES };

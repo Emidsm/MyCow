@@ -18,14 +18,24 @@
 .animal-row__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--space-3);
   margin-bottom: var(--space-2);
+}
+
+.animal-row__thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .animal-row__arete {
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 15px;
+  margin-right: auto;
 }
 
 .animal-row__badge {

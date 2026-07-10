@@ -1,3 +1,5 @@
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db as defaultDb } from '../../sync/db.js';
 import { capitalize, categoriaLabel } from '../../utils.js';
 import './AnimalRow.css';
 
@@ -19,7 +21,18 @@ function fallback(value) {
  * `fallback()`. La raza se muestra TAL CUAL viene ('Brangus' vs 'brangus');
  * no se normaliza casing en la UI.
  */
-export function AnimalRow({ animal, onClick }) {
+export function AnimalRow({ animal, onClick, db = defaultDb }) {
+  const fotoThumb = useLiveQuery(
+    async () => {
+      const f = await db.fotos.filter((f) => f.animal_id === animal.client_id && f.deleted_at == null).first();
+      if (!f) return null;
+      const d = await db.fotos_data.get(f.client_id);
+      return d?.data_url ?? null;
+    },
+    [db, animal.client_id],
+    null
+  );
+
   return (
     <li className="animal-row">
       <button
@@ -29,6 +42,9 @@ export function AnimalRow({ animal, onClick }) {
         aria-label={`Editar animal, ${categoriaLabel(animal.categoria, animal.sexo)} arete ${fallback(animal.arete_local)}`}
       >
         <div className="animal-row__header">
+          {fotoThumb && (
+            <img src={fotoThumb} alt="" className="animal-row__thumb" />
+          )}
           <span className="animal-row__arete">{categoriaLabel(animal.categoria, animal.sexo)} Arete {fallback(animal.arete_local)}</span>
           <span
             className={`animal-row__badge ${ESTADO_VIDA_CLASS[animal.estado_vida] ?? ''}`}
