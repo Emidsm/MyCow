@@ -145,7 +145,7 @@ COMMENT ON TABLE ventas IS 'Venta de un animal (evento terminal); su alta marca 
 CREATE TABLE IF NOT EXISTS fotos (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   animal_id    UUID NOT NULL REFERENCES animales(id) ON DELETE CASCADE,
-  storage_path TEXT NOT NULL,   -- ruta en el bucket de Supabase Storage
+  storage_path TEXT,             -- ruta en el bucket de Supabase Storage; NULL = solo local
   es_principal BOOLEAN DEFAULT false,
   -- campos offline
   client_id    UUID UNIQUE,

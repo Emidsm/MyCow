@@ -109,11 +109,12 @@ export async function softDelete(db, entity, clientId) {
       throw new Error(`softDelete: no existe ${entity} con client_id=${clientId}`);
     }
 
-    // Si aún hay un insert pendiente, el server nunca recibió este registro.
-    // Cancelamos ambos en lugar de encolar un delete que se atascaría.
+    // Si aún hay un insert pendiente o fallido, el server nunca insertó
+    // este registro correctamente. Cancelamos ambos en lugar de encolar un
+    // delete que se atascaría.
     const pendingInsert = await db.outbox
       .where({ entity, client_id: clientId, op: 'insert' })
-      .filter((o) => o.status === 'pending')
+      .filter((o) => o.status === 'pending' || o.status === 'failed')
       .first();
     if (pendingInsert) {
       await db[entity].delete(clientId);

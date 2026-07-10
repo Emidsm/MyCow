@@ -70,18 +70,22 @@ export function useFotos(animalClientId, db = defaultDb) {
   async function addFoto(file) {
     const { data_url, blob } = await resizeImage(file);
 
-    const storage_path = `animales/${animalClientId}/${uuidv4()}.jpg`;
-    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storage_path, blob, {
-      contentType: 'image/jpeg',
-      upsert: false,
-    });
-    if (uploadError) {
-      console.warn('Foto no subió a Storage, guardando solo local:', uploadError.message);
+    let storage_path = null;
+    if (navigator.onLine) {
+      storage_path = `animales/${animalClientId}/${uuidv4()}.jpg`;
+      const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storage_path, blob, {
+        contentType: 'image/jpeg',
+        upsert: false,
+      });
+      if (uploadError) {
+        console.warn('Foto no subió a Storage:', uploadError.message);
+        storage_path = null;
+      }
     }
 
     const foto = await writes.fotos.create({
       animal_id: animalClientId,
-      storage_path: uploadError ? null : storage_path,
+      storage_path,
     });
     await db.fotos_data.put({ client_id: foto.client_id, data_url });
     return foto;
