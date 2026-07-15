@@ -72,9 +72,6 @@ export function PotrerosList({ db = defaultDb }) {
           >
             <div className="potreros__card-header">
               <h2 className="potreros__card-name">{potrero.nombre}</h2>
-              <span className="potreros__card-area">
-                {potrero.area_hectareas ? `${potrero.area_hectareas} ha` : null}
-              </span>
             </div>
             <p className="potreros__card-count">
               {potrero.animalCount} animal{potrero.animalCount !== 1 ? 'es' : ''}

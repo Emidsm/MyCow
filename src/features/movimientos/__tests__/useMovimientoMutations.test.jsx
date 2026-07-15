@@ -27,7 +27,7 @@ describe('registrarMovimiento', () => {
     const origen = await create(db, 'potreros', { nombre: 'Morones' });
     const destino = await create(db, 'potreros', { nombre: 'El Jagüey' });
     const animal = await create(db, 'animales', {
-      arete_local: '300', categoria: 'novillo', potrero_actual_id: origen.client_id,
+      arete_local: '300', categoria: 'cria', potrero_actual_id: origen.client_id,
     });
     await db.outbox.clear(); // aislar sólo las ops del movimiento
 

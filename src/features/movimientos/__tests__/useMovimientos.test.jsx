@@ -30,7 +30,7 @@ describe('useMovimientos', () => {
       { client_id: 'salto', nombre: 'El Salto', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null },
     ]);
     await db.animales.put({
-      client_id: 'animal_300', arete_local: '300', categoria: 'novillo',
+      client_id: 'animal_300', arete_local: '300', categoria: 'cria',
       potrero_actual_id: 'salto', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
     });
     await db.movimientos.bulkPut([

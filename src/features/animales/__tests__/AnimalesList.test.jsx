@@ -25,7 +25,7 @@ async function seedAnimales(db) {
     { client_id: 'b4', id: 'b4', arete_local: '4', arete_siniiga: '11814702', categoria: 'vaca', sexo: 'hembra', raza: 'Brangus', estado_vida: 'activo', created_at: '2025-01-04', deleted_at: null },
     { client_id: 'b5', id: 'b5', arete_local: '92', categoria: 'cria', sexo: 'macho', estado_vida: 'activo', created_at: '2025-01-05', deleted_at: null },
     { client_id: 'b6', id: 'b6', arete_local: '99', categoria: 'cria', sexo: 'hembra', estado_vida: 'activo', created_at: '2025-01-06', deleted_at: null },
-    { client_id: 'b7', id: 'b7', arete_local: '300', categoria: 'novillo', sexo: null, estado_vida: 'activo', potrero_actual_id: 'a1', created_at: '2025-01-07', deleted_at: null },
+    { client_id: 'b7', id: 'b7', arete_local: '300', categoria: 'cria', sexo: null, estado_vida: 'activo', potrero_actual_id: 'a1', created_at: '2025-01-07', deleted_at: null },
     // Borrado: debe quedar excluido (regla innegociable deleted_at IS NULL).
     { client_id: 'b8', id: 'b8', arete_local: '999', categoria: 'vaca', sexo: 'hembra', estado_vida: 'muerto', created_at: '2025-01-08', deleted_at: '2025-02-01' },
   ];
@@ -68,7 +68,7 @@ describe('AnimalesList', () => {
 
   it('resuelve el potrero actual por nombre', async () => {
     render(<AnimalesList db={db} />);
-    const row = (await screen.findByText('Novillo Arete 300')).closest('li');
+    const row = (await screen.findByText('Becerro Arete 300')).closest('li');
     expect(within(row).getByText('Potrero actual').nextSibling).toHaveTextContent('El Jagüey');
   });
 
@@ -79,10 +79,11 @@ describe('AnimalesList', () => {
     fireEvent.click(screen.getByText('Crías'));
 
     await waitFor(() => {
-      expect(screen.getAllByRole('listitem')).toHaveLength(2);
+      expect(screen.getAllByRole('listitem')).toHaveLength(3);
     });
     expect(screen.getByText('Becerro Arete 92')).toBeInTheDocument();
     expect(screen.getByText('Becerra Arete 99')).toBeInTheDocument();
+    expect(screen.getByText('Becerro Arete 300')).toBeInTheDocument();
     expect(screen.queryByText('Vaca Arete 1')).not.toBeInTheDocument();
   });
 

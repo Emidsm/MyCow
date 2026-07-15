@@ -29,7 +29,7 @@ ON CONFLICT (client_id) DO NOTHING;
 INSERT INTO animales (id, client_id, arete_local, categoria, sexo,
                       estado_reproductivo, estado_vida, observaciones) VALUES
   ('b0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',  -- vaca_1
-   '1', 'vaca', 'hembra', 'vacia', 'activo', 'tirado')
+   '1', 'vaca', 'hembra', 'horra', 'activo', 'tirado')
 ON CONFLICT (client_id) DO NOTHING;
 
 -- vaca_2 / Puma: raza='quemada' viene así en la data cruda; se conserva tal cual.
@@ -81,7 +81,7 @@ ON CONFLICT (client_id) DO NOTHING;
 INSERT INTO animales (id, client_id, arete_local, categoria, sexo,
                       estado_vida, observaciones) VALUES
   ('b0000000-0000-4000-8000-000000000007', 'b0000000-0000-4000-8000-000000000007',  -- animal_300
-   '300', 'novillo', NULL, 'activo',
+   '300', 'cria', NULL, 'activo',
    'Inferido desde historial de movimientos; datos pendientes de completar')
 ON CONFLICT (client_id) DO NOTHING;
 

@@ -22,7 +22,7 @@ describe('engine.push — movimientos con 3 FK (animal_id, potrero_origen_id, po
 
     await db.animales.put({
       client_id: 'animal-cid', id: 'animal-real-id',
-      categoria: 'novillo', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
+      categoria: 'cria', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
     });
     await db.potreros.put({
       client_id: 'origen-cid', id: 'origen-real-id',
@@ -60,7 +60,7 @@ describe('engine.push — movimientos con 3 FK (animal_id, potrero_origen_id, po
 
     await db.animales.put({
       client_id: 'animal-cid', id: 'animal-real-id',
-      categoria: 'novillo', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
+      categoria: 'cria', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
     });
     await db.potreros.put({
       client_id: 'origen-cid', id: 'origen-real-id',

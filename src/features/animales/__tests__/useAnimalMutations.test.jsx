@@ -166,11 +166,11 @@ describe('useAnimalMutations', () => {
   it('createAnimal: madre_id apuntando a cualquier animal no bloquea; padre_id NULL permitido', async () => {
     const { result } = renderHook(() => useAnimalMutations(db));
 
-    // "Madre" deliberadamente atípica: un novillo (no vaca/novillona), simula
+    // "Madre" deliberadamente atípica: una cría (no vaca), simula
     // datos de campo imperfectos. NO debe bloquear el guardado.
     let madreAtipica;
     await act(async () => {
-      madreAtipica = await result.current.createAnimal({ categoria: 'novillo', sexo: 'macho' });
+      madreAtipica = await result.current.createAnimal({ categoria: 'cria', sexo: 'macho' });
     });
 
     let cria;

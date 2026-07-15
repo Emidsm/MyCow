@@ -25,7 +25,7 @@ describe('MovimientoForm', () => {
   it('precarga el origen autodetectado (potrero_actual_id del animal) como solo lectura', async () => {
     await db.potreros.put({ client_id: 'p-origen', nombre: 'Morones', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null });
     await db.animales.put({
-      client_id: 'a1', arete_local: '300', categoria: 'novillo', potrero_actual_id: 'p-origen',
+      client_id: 'a1', arete_local: '300', categoria: 'cria', potrero_actual_id: 'p-origen',
       updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
     });
 
@@ -48,7 +48,7 @@ describe('MovimientoForm', () => {
   it('bloquea guardar si destino == origen, con mensaje claro', async () => {
     await db.potreros.put({ client_id: 'p1', nombre: 'Morones', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null });
     await db.animales.put({
-      client_id: 'a1', arete_local: '300', categoria: 'novillo', potrero_actual_id: 'p1',
+      client_id: 'a1', arete_local: '300', categoria: 'cria', potrero_actual_id: 'p1',
       updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
     });
 
@@ -69,7 +69,7 @@ describe('MovimientoForm', () => {
       { client_id: 'p2', nombre: 'El Jagüey', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null },
     ]);
     await db.animales.put({
-      client_id: 'a1', arete_local: '300', categoria: 'novillo', potrero_actual_id: 'p1',
+      client_id: 'a1', arete_local: '300', categoria: 'cria', potrero_actual_id: 'p1',
       updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
     });
 
@@ -109,7 +109,7 @@ describe('AnimalForm — integración con "Mover a potrero"', () => {
       { client_id: 'p2', nombre: 'El Jagüey', updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null },
     ]);
     await db.animales.put({
-      client_id: 'a1', arete_local: '300', categoria: 'novillo', potrero_actual_id: 'p1',
+      client_id: 'a1', arete_local: '300', categoria: 'cria', potrero_actual_id: 'p1',
       updated_at: '2026-01-01T00:00:00.000Z', deleted_at: null,
     });
 

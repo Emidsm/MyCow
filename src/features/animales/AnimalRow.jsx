@@ -11,7 +11,6 @@ const DASH = '—';
 const ESTADO_VIDA_CLASS = {
   activo: 'animal-row__badge--activo',
   muerto: 'animal-row__badge--muerto',
-  vendido: 'animal-row__badge--vendido',
 };
 
 function fallback(value) {

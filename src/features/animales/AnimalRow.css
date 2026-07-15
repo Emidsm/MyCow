@@ -53,8 +53,7 @@
   color: var(--status-online);
 }
 
-.animal-row__badge--muerto,
-.animal-row__badge--vendido {
+.animal-row__badge--muerto {
   background: color-mix(in srgb, var(--status-danger) 18%, transparent);
   color: var(--status-danger);
 }
