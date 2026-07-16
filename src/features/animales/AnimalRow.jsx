@@ -69,10 +69,12 @@ export function AnimalRow({ animal, onClick, db = defaultDb }) {
             <dt>Categoría</dt>
             <dd>{capitalize(animal.categoria)}</dd>
           </div>
-          <div>
-            <dt>Sexo</dt>
-            <dd>{fallback(capitalize(animal.sexo))}</dd>
-          </div>
+          {animal.categoria === 'cria' && (
+            <div>
+              <dt>Sexo</dt>
+              <dd>{fallback(capitalize(animal.sexo))}</dd>
+            </div>
+          )}
           <div>
             <dt>Raza</dt>
             <dd>{fallback(animal.raza)}</dd>
