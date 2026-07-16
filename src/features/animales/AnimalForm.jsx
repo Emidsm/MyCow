@@ -80,6 +80,10 @@ export function AnimalForm({ db = defaultDb, clientId = null, initialCategoria =
     () => db.potreros.filter((p) => p.deleted_at == null && p.activo !== false).toArray(),
     [db]
   );
+  const razas = useLiveQuery(async () => {
+    const all = await db.animales.filter((a) => a.deleted_at == null).toArray();
+    return [...new Set(all.map((a) => a.raza).filter(Boolean))].sort();
+  }, [db]);
   // Estado de vida en vivo (no sólo el snapshot de precarga): decide qué
   // acciones terminales se ofrecen y se actualiza solo cuando el espejo
   // optimista de registrarDefuncion/registrarVenta lo cambia.
@@ -296,7 +300,17 @@ export function AnimalForm({ db = defaultDb, clientId = null, initialCategoria =
 
           <label className="animal-form__field">
             <span>Raza</span>
-            <input type="text" value={form.raza} onChange={(e) => setField('raza', e.target.value)} />
+            <input
+              type="text"
+              value={form.raza}
+              onChange={(e) => setField('raza', e.target.value)}
+              list="raza-datalist"
+            />
+            <datalist id="raza-datalist">
+              {(razas ?? []).map((r) => (
+                <option key={r} value={r} />
+              ))}
+            </datalist>
           </label>
 
           <label className="animal-form__field">
