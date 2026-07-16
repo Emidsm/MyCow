@@ -28,7 +28,7 @@ describe('AnimalForm', () => {
 
     fireEvent.change(screen.getByLabelText('Arete morado'), { target: { value: '55' } });
     fireEvent.change(screen.getByLabelText('Categoría *'), { target: { value: 'vaca' } });
-    fireEvent.change(screen.getByLabelText('Sexo'), { target: { value: 'hembra' } });
+    // Sexo se auto-asigna a 'hembra' para vaca y no se muestra
 
     fireEvent.click(screen.getByText('Guardar'));
 
@@ -39,19 +39,19 @@ describe('AnimalForm', () => {
     expect(rows[0]).toMatchObject({ arete_local: '55', categoria: 'vaca', sexo: 'hembra' });
   });
 
-  it('bloquea guardar un semental hembra: el botón queda deshabilitado y no llega al outbox', async () => {
-    render(<AnimalForm db={db} onClose={() => {}} />);
+  it('seleccionar semental auto-asigna sexo macho y el form puede guardar', async () => {
+    const onClose = vi.fn();
+    render(<AnimalForm db={db} onClose={onClose} />);
 
     fireEvent.change(screen.getByLabelText('Categoría *'), { target: { value: 'semental' } });
-    fireEvent.change(screen.getByLabelText('Sexo'), { target: { value: 'hembra' } });
-
-    expect(await screen.findByText('Un semental debe ser macho.')).toBeInTheDocument();
-    expect(screen.getByText('Guardar')).toBeDisabled();
+    // Sexo se auto-asigna a 'macho' y no se muestra el selector
 
     fireEvent.click(screen.getByText('Guardar'));
 
-    expect(await db.animales.count()).toBe(0);
-    expect(await db.outbox.count()).toBe(0);
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+    const rows = await db.animales.toArray();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ categoria: 'semental', sexo: 'macho' });
   });
 
   it('precarga un animal existente en modo edición', async () => {
@@ -68,22 +68,22 @@ describe('AnimalForm', () => {
     expect(screen.getByText('Retirar')).toBeInTheDocument();
   });
 
-  it('seleccionar vaca auto-asigna sexo hembra y deshabilita el selector', async () => {
+  it('seleccionar vaca auto-asigna sexo hembra y oculta el selector', async () => {
     render(<AnimalForm db={db} onClose={() => {}} />);
 
     fireEvent.change(screen.getByLabelText('Categoría *'), { target: { value: 'vaca' } });
 
-    expect(screen.getByLabelText('Sexo')).toHaveValue('hembra');
-    expect(screen.getByLabelText('Sexo')).toBeDisabled();
+    // Sexo se auto-asigna internamente y el selector no se muestra
+    expect(screen.queryByLabelText('Sexo')).not.toBeInTheDocument();
   });
 
-  it('seleccionar semental auto-asigna sexo macho y deshabilita el selector', async () => {
+  it('seleccionar semental auto-asigna sexo macho y oculta el selector', async () => {
     render(<AnimalForm db={db} onClose={() => {}} />);
 
     fireEvent.change(screen.getByLabelText('Categoría *'), { target: { value: 'semental' } });
 
-    expect(screen.getByLabelText('Sexo')).toHaveValue('macho');
-    expect(screen.getByLabelText('Sexo')).toBeDisabled();
+    // Sexo se auto-asigna internamente y el selector no se muestra
+    expect(screen.queryByLabelText('Sexo')).not.toBeInTheDocument();
   });
 
   it('seleccionar cría deja el sexo editable sin valor forzado', async () => {

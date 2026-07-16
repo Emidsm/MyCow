@@ -245,21 +245,22 @@ export function AnimalForm({ db = defaultDb, clientId = null, initialCategoria =
             </select>
           </label>
 
-          <label className="animal-form__field">
-            <span>Sexo</span>
-            <select
-              value={form.sexo}
-              onChange={(e) => setField('sexo', e.target.value)}
-              disabled={form.categoria === 'vaca' || form.categoria === 'semental'}
-            >
-              <option value="">Selecciona…</option>
-              {SEXO_OPTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {capitalize(s)}
-                </option>
-              ))}
-            </select>
-          </label>
+          {form.categoria === 'cria' && (
+            <label className="animal-form__field">
+              <span>Sexo</span>
+              <select
+                value={form.sexo}
+                onChange={(e) => setField('sexo', e.target.value)}
+              >
+                <option value="">Selecciona…</option>
+                {SEXO_OPTIONS.map((s) => (
+                  <option key={s} value={s}>
+                    {capitalize(s)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <label className="animal-form__field">
             <span>Potrero actual</span>
