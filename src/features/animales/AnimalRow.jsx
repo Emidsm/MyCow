@@ -65,6 +65,10 @@ export function AnimalRow({ animal, onClick, db = defaultDb }) {
         </div>
 
         <dl className="animal-row__details">
+          <div>
+            <dt>SINIIGA</dt>
+            <dd>{fallback(animal.arete_siniiga)}</dd>
+          </div>
           {animal.categoria === 'cria' && (
             <div>
               <dt>Sexo</dt>
@@ -72,16 +76,16 @@ export function AnimalRow({ animal, onClick, db = defaultDb }) {
             </div>
           )}
           <div>
+            <dt>Potrero actual</dt>
+            <dd>{fallback(animal.potrero_nombre)}</dd>
+          </div>
+          <div>
             <dt>Raza</dt>
             <dd>{fallback(animal.raza)}</dd>
           </div>
           <div>
-            <dt>SINIIGA</dt>
-            <dd>{fallback(animal.arete_siniiga)}</dd>
-          </div>
-          <div>
-            <dt>Potrero actual</dt>
-            <dd>{fallback(animal.potrero_nombre)}</dd>
+            <dt>Color</dt>
+            <dd>{fallback(animal.color)}</dd>
           </div>
         </dl>
       </button>
