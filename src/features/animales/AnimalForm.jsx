@@ -50,11 +50,19 @@ function blankToNull(value) {
  * (precarga el registro); ausente = crear. Sin <form> con submit nativo:
  * el guardado es un handler controlado en el botón "Guardar".
  */
-export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
+export function AnimalForm({ db = defaultDb, clientId = null, initialCategoria = null, onClose }) {
   const isEdit = clientId != null;
   const { createAnimal, updateAnimal, softDeleteAnimal } = useAnimalMutations(db);
 
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState(() => {
+    const base = emptyForm();
+    if (!isEdit && initialCategoria) {
+      base.categoria = initialCategoria;
+      if (initialCategoria === 'vaca') base.sexo = 'hembra';
+      else if (initialCategoria === 'semental') base.sexo = 'macho';
+    }
+    return base;
+  });
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [movingOpen, setMovingOpen] = useState(false);
@@ -239,6 +247,21 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
             </select>
           </label>
 
+          <label className="animal-form__field">
+            <span>Potrero actual</span>
+            <select
+              value={form.potrero_actual_id ?? ''}
+              onChange={(e) => setField('potrero_actual_id', e.target.value || null)}
+            >
+              <option value="">— Ninguno —</option>
+              {(potreros ?? []).map((p) => (
+                <option key={p.client_id} value={p.client_id}>
+                  {p.nombre}
+                </option>
+              ))}
+            </select>
+          </label>
+
           {sementalInvalido && (
             <p className="animal-form__error" role="alert">
               Un semental debe ser macho.
@@ -316,21 +339,6 @@ export function AnimalForm({ db = defaultDb, clientId = null, onClose }) {
             excludeClientId={clientId}
             sexo="macho"
           />
-
-          <label className="animal-form__field">
-            <span>Potrero actual</span>
-            <select
-              value={form.potrero_actual_id ?? ''}
-              onChange={(e) => setField('potrero_actual_id', e.target.value || null)}
-            >
-              <option value="">— Ninguno —</option>
-              {(potreros ?? []).map((p) => (
-                <option key={p.client_id} value={p.client_id}>
-                  {p.nombre}
-                </option>
-              ))}
-            </select>
-          </label>
 
           {isEdit && !esTerminal && (
             <div className="animal-form__field">

@@ -125,7 +125,7 @@ export function AnimalesList({ db = defaultDb } = {}) {
       )}
 
       {formTarget && (
-        <AnimalForm db={db} clientId={formTarget.clientId} onClose={closeForm} />
+        <AnimalForm db={db} clientId={formTarget.clientId} initialCategoria={categoriaTab || null} onClose={closeForm} />
       )}
     </section>
   );
