@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const STORAGE_KEY = 'mycow_theme';
+const STORAGE_KEY = 'gestion_ganadera_theme';
 
 function readStoredTheme() {
   try {

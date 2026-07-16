@@ -28,7 +28,7 @@ function readIntEnv(key, fallback) {
 }
 
 // Nombre de la base IndexedDB local (Dexie).
-export const SYNC_DB_NAME = readEnv('VITE_SYNC_DB_NAME', 'mycow_sync');
+export const SYNC_DB_NAME = readEnv('VITE_SYNC_DB_NAME', 'gestion_ganadera_sync');
 
 // Cada cuánto dispara el auto-sync el scheduler (ms). Default: 30 s.
 export const SYNC_INTERVAL_MS = readIntEnv('VITE_SYNC_INTERVAL_MS', 30_000);

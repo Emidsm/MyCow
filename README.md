@@ -1,4 +1,4 @@
-# MyCow
+# GestionGanadera
 
 PWA de gestión ganadera offline-first.
 Stack: React (Vite) + Supabase (Postgres, sin ORM) + migraciones SQL puras +

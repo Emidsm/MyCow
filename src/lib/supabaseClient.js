@@ -24,7 +24,7 @@ const missing = REQUIRED_ENV_VARS.filter((name) => {
 
 if (missing.length > 0) {
   throw new Error(
-    `[MyCow] Faltan variables de entorno requeridas: ${missing.join(', ')}. ` +
+    `[GestionGanadera] Faltan variables de entorno requeridas: ${missing.join(', ')}. ` +
       'Copia .env.example a .env y define todos los valores.'
   );
 }

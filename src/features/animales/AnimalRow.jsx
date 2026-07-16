@@ -4,7 +4,7 @@ import { capitalize, categoriaLabel } from '../../utils.js';
 import { supabase } from '../../lib/supabaseClient.js';
 import './AnimalRow.css';
 
-const BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET ?? 'mycow_fotos';
+const BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET ?? 'gestion_ganadera_fotos';
 
 const DASH = '—';
 

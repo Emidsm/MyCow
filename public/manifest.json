@@ -1,6 +1,6 @@
 {
-  "short_name": "MyCow",
-  "name": "MyCow - Gestión de hato ganadero",
+  "short_name": "GestionGanadera",
+  "name": "GestionGanadera - Gestión de hato ganadero",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#daccc0",

@@ -5,7 +5,7 @@ import { writesFor } from '../../sync/writes.js';
 import { db as defaultDb } from '../../sync/db.js';
 import { supabase } from '../../lib/supabaseClient.js';
 
-const BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET ?? 'mycow_fotos';
+const BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET ?? 'gestion_ganadera_fotos';
 const MAX_DIM = 800;
 const QUALITY = 0.7;
 

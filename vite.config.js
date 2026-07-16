@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icon.svg', 'apple-touch-icon-180x180.png'],
       manifest: {
-        name: 'MyCow - Gestión ganadera',
-        short_name: 'MyCow',
+        name: 'GestionGanadera - Gestión ganadera',
+        short_name: 'GestionGanadera',
         description: 'PWA ganadera offline-first para trabajo en campo',
         theme_color: '#daccc0',
         background_color: '#f8f6f4',

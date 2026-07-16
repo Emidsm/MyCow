@@ -62,7 +62,7 @@ export function LoginScreen() {
   return (
     <div className="login-screen">
       <div className="login-screen__card">
-        <h1 className="login-screen__title">MyCow</h1>
+        <h1 className="login-screen__title">GestionGanadera</h1>
         <p className="login-screen__subtitle">Inicia sesión para gestionar el rancho.</p>
 
         <label className="login-screen__field">

@@ -97,6 +97,6 @@ END $$;
 
 -- ═══════════════════════════════════════════════════════════════════
 -- Storage — bucket de fotos (fotos.storage_path, ver 0002_tables.sql)
--- NOTA: el bucket 'mycow_fotos' ya fue creado, y las RLS se
+-- NOTA: el bucket 'gestion_ganadera_fotos' ya fue creado, y las RLS se
 -- aplicaron en la migración 0009_storage_bucket_rls.sql.
 -- ═══════════════════════════════════════════════════════════════════
