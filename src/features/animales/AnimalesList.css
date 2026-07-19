@@ -75,3 +75,47 @@
   flex-direction: column;
   gap: var(--space-3);
 }
+
+.animales-list__search {
+  position: relative;
+  padding: 0 var(--space-4);
+}
+
+.animales-list__search-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.animales-list__search-input:focus {
+  border-color: var(--brand-primary);
+}
+
+.animales-list__search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.animales-list__search-clear {
+  position: absolute;
+  right: calc(var(--space-4) + var(--space-2));
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  padding: var(--space-1);
+  line-height: 1;
+}
+
+.animales-list__search-clear:hover {
+  color: var(--text-primary);
+}

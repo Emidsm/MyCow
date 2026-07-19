@@ -7,6 +7,21 @@ import { filterByEstadoVida } from './filters.js';
 import { db as defaultDb } from '../../sync/db.js';
 import './AnimalesList.css';
 
+function matchesSearch(animal, query) {
+  if (!query) return true;
+  const q = query.toLowerCase();
+  const fields = [
+    animal.arete_local,
+    animal.arete_siniiga,
+    animal.nombre,
+    animal.potrero_nombre,
+    animal.raza,
+    animal.color,
+    animal.categoria,
+  ];
+  return fields.some((f) => f && f.toLowerCase().includes(q));
+}
+
 const TABS = [
   { key: '', label: 'Todas' },
   { key: 'vaca', label: 'Vacas' },
@@ -46,6 +61,7 @@ export function AnimalesList({ db = defaultDb } = {}) {
   const [categoriaTab, setCategoriaTab] = useState('');
   const [sortBy, setSortBy] = useState('arete');
   const [estadoVida, setEstadoVida] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   // null = cerrado; { clientId: null } = alta; { clientId } = edición.
   const [formTarget, setFormTarget] = useState(null);
 
@@ -60,8 +76,11 @@ export function AnimalesList({ db = defaultDb } = {}) {
       result = result.filter((a) => a.categoria === categoriaTab);
     }
     result = filterByEstadoVida(result, estadoVida);
+    if (searchQuery) {
+      result = result.filter((a) => matchesSearch(a, searchQuery));
+    }
     return applySort(result, sortBy);
-  }, [animales, categoriaTab, estadoVida, sortBy]);
+  }, [animales, categoriaTab, estadoVida, sortBy, searchQuery]);
 
   function handleCreate() {
     setFormTarget({ clientId: null });
@@ -96,6 +115,26 @@ export function AnimalesList({ db = defaultDb } = {}) {
             {label}
           </button>
         ))}
+      </div>
+
+      <div className="animales-list__search">
+        <input
+          type="search"
+          placeholder="Buscar por arete, nombre, potrero, raza…"
+          className="animales-list__search-input"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            className="animales-list__search-clear"
+            onClick={() => setSearchQuery('')}
+            aria-label="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        )}
       </div>
 
       <AnimalesFilters
