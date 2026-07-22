@@ -216,6 +216,12 @@ export function createEngine({ db, supabase, config = syncConfig } = {}) {
     // en el catch de push() como cualquier fallo: 'failed' + backoff + retry.
     const payload = await resolveForeignKeys(db, op.entity, op.payload);
 
+    // Normalizar fecha vacía → hoy. Parchea outbox entries atascados con
+    // fecha="" que Postgres rechaza (invalid input syntax for type date).
+    if (op.entity === 'movimientos' && (!payload.fecha || payload.fecha === '')) {
+      payload.fecha = new Date().toISOString().slice(0, 10);
+    }
+
     // 'delete' se propaga como update soft: garantizamos deleted_at seteado.
     if (op.op === 'delete' && !payload.deleted_at) {
       payload.deleted_at = new Date().toISOString();
