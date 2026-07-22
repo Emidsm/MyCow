@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db as defaultDb } from '../../sync/db.js';
-import { corregirLote } from './useMovimientoMutations.js';
+import { registrarMovimientoBatch } from './useMovimientoMutations.js';
 import './CorregirLoteModal.css';
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export function CorregirLoteModal({ db = defaultDb, potrero, onClose }) {
+export function CorregirLoteModal({ db = defaultDb, animalIds, onClose }) {
   const [potreroDestinoId, setPotreroDestinoId] = useState('');
   const [fecha, setFecha] = useState(todayIso);
   const [detalle, setDetalle] = useState('');
@@ -17,15 +17,9 @@ export function CorregirLoteModal({ db = defaultDb, potrero, onClose }) {
   const [result, setResult] = useState(null);
 
   const potreros = useLiveQuery(
-    () => db.potreros.filter((p) => p.deleted_at == null && p.activo !== false && p.client_id !== potrero.client_id).toArray(),
-    [db, potrero.client_id]
+    () => db.potreros.filter((p) => p.deleted_at == null && p.activo !== false).toArray(),
+    [db]
   );
-
-  const conteo = useLiveQuery(async () => {
-    return db.animales
-      .filter((a) => a.potrero_actual_id === potrero.client_id && a.estado_vida === 'activo' && a.deleted_at == null)
-      .count();
-  }, [db, potrero.client_id]);
 
   async function handleSubmit() {
     setError(null);
@@ -37,8 +31,8 @@ export function CorregirLoteModal({ db = defaultDb, potrero, onClose }) {
 
     setSaving(true);
     try {
-      const moved = await corregirLote(db, {
-        potrero_origen_id: potrero.client_id,
+      const moved = await registrarMovimientoBatch(db, {
+        animalIds,
         potrero_destino_id: potreroDestinoId,
         fecha,
         detalle: detalle.trim() || null,
@@ -64,8 +58,8 @@ export function CorregirLoteModal({ db = defaultDb, potrero, onClose }) {
           <div className="corregir-modal__body">
             <p className="corregir-modal__result">
               {result === 0
-                ? 'Ningún animal se movió (todos ya estaban en ese potrero o no están activos).'
-                : `${result} animal${result !== 1 ? 'es' : ''} movido${result !== 1 ? 's' : ''} exitosamente de «${potrero.nombre}».`}
+                ? 'Ningún animal se movió (ya estaban en ese potrero o no están activos).'
+                : `${result} animal${result !== 1 ? 'es' : ''} movido${result !== 1 ? 's' : ''} exitosamente.`}
             </p>
           </div>
           <footer className="corregir-modal__footer">
@@ -82,7 +76,7 @@ export function CorregirLoteModal({ db = defaultDb, potrero, onClose }) {
     <div className="corregir-overlay" role="dialog" aria-modal="true">
       <div className="corregir-modal">
         <header className="corregir-modal__header">
-          <h2>Corregir lote — {potrero.nombre}</h2>
+          <h2>Corregir lote</h2>
           <button type="button" className="corregir-modal__close" onClick={onClose} aria-label="Cerrar">
             ×
           </button>
@@ -90,7 +84,7 @@ export function CorregirLoteModal({ db = defaultDb, potrero, onClose }) {
 
         <div className="corregir-modal__body">
           <p className="corregir-modal__summary">
-            Se moverán todos los animales actualmente en «{potrero.nombre}»{conteo != null ? ` (${conteo})` : ''} al potrero correcto.
+            Se moverán {animalIds.length} animal{animalIds.length !== 1 ? 'es' : ''} al potrero correcto.
           </p>
 
           <label className="corregir-modal__field">
@@ -132,7 +126,7 @@ export function CorregirLoteModal({ db = defaultDb, potrero, onClose }) {
             Cancelar
           </button>
           <button type="button" className="corregir-modal__save" onClick={handleSubmit} disabled={saving}>
-            {saving ? 'Corrigiendo…' : 'Corregir'}
+            {saving ? 'Moviendo…' : 'Corregir'}
           </button>
         </footer>
       </div>

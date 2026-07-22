@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { create, update } from '../../sync/writes.js';
+import { create, update, softDelete } from '../../sync/writes.js';
 import { db as defaultDb } from '../../sync/db.js';
 
 function todayIso() {
@@ -133,12 +133,22 @@ export async function corregirLote(db, { potrero_origen_id, potrero_destino_id, 
   });
 }
 
+/**
+ * deleteMovimiento: soft-delete de un movimiento individual.
+ * NOTA: esto NO revierte el efecto del movimiento (el animal sigue en el
+ * potrero destino). Solo oculta el registro del historial.
+ */
+export async function deleteMovimiento(db, movimientoClientId) {
+  return softDelete(db, 'movimientos', movimientoClientId);
+}
+
 export function useMovimientoMutations(db = defaultDb) {
   return useMemo(
     () => ({
       registrarMovimiento: (data) => registrarMovimiento(db, data),
       registrarMovimientoBatch: (data) => registrarMovimientoBatch(db, data),
       corregirLote: (data) => corregirLote(db, data),
+      deleteMovimiento: (movimientoClientId) => deleteMovimiento(db, movimientoClientId),
     }),
     [db]
   );

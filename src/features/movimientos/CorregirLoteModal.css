@@ -135,3 +135,55 @@
 .corregir-modal__cancel:disabled {
   opacity: 0.5;
 }
+
+.corregir-modal__animales {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.corregir-modal__animal-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  position: sticky;
+  top: 0;
+}
+
+.corregir-modal__animal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.corregir-modal__animal-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  font-size: 13px;
+}
+
+.corregir-modal__animal-item:nth-child(even) {
+  background: var(--bg-surface);
+}
+
+.corregir-modal__animal-item label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.corregir-modal__empty {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: var(--space-3);
+}
