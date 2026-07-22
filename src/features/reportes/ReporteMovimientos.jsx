@@ -87,12 +87,11 @@ export function ReporteMovimientos({ db = defaultDb }) {
               </tr>
             </thead>
             <tbody>
-              {groups.map((g, i) => {
+              {groups.map((g) => {
                 const gKey = `${g.fecha}||${g.potrero_origen_nombre ?? ''}||${g.potrero_destino_nombre ?? ''}`;
                 const isExpanded = expandedKeys.has(gKey);
-                return (
-                  <>
-                    <tr key={gKey} className="reporte-sub__row-group">
+                return [
+                  <tr key={gKey} className="reporte-sub__row-group">
                       <td>{formatDate(g.fecha)}</td>
                       <td>
                         <button
@@ -108,8 +107,8 @@ export function ReporteMovimientos({ db = defaultDb }) {
                       <td>{g.potrero_origen_nombre ?? '—'}</td>
                       <td>{g.potrero_destino_nombre ?? '—'}</td>
                       <td>{g.detalle ?? '—'}</td>
-                    </tr>
-                    {isExpanded && g.aretes.map((arete, j) => (
+                    </tr>,
+                    isExpanded && g.aretes.map((arete, j) => (
                       <tr key={`${gKey}-arete-${j}`} className="reporte-sub__row-arete">
                         <td />
                         <td className="reporte-sub__arete-value">{arete}</td>
@@ -117,9 +116,8 @@ export function ReporteMovimientos({ db = defaultDb }) {
                         <td />
                         <td />
                       </tr>
-                    ))}
-                  </>
-                );
+                    )),
+                  ];
               })}
             </tbody>
           </table>

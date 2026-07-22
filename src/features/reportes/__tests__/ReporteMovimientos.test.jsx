@@ -48,7 +48,7 @@ describe('ReporteMovimientos', () => {
     expect(rows.length).toBe(2);
     expect(screen.getByText('A')).toBeInTheDocument();
     expect(screen.getByText('B')).toBeInTheDocument();
-    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getByTitle('Ver aretes')).toBeInTheDocument();
   });
 
   it('muestra aretes al expandir grupo', async () => {
@@ -66,7 +66,7 @@ describe('ReporteMovimientos', () => {
     ]);
 
     renderWithRouter(<ReporteMovimientos db={db} />);
-    const toggle = await screen.findByText('2');
+    const toggle = await screen.findByTitle('Ver aretes');
     expect(screen.queryByText('10')).not.toBeInTheDocument();
     expect(screen.queryByText('20')).not.toBeInTheDocument();
 
