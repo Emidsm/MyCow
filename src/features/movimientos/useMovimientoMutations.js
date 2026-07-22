@@ -85,55 +85,43 @@ export async function registrarMovimientoBatch(db, { animalIds, potrero_destino_
 }
 
 /**
- * revertirMovimiento: crea un movimiento inverso + marca el original como
- * revertido, en UNA sola transacción Dexie. El animal debe estar actualmente
- * en el potrero destino del movimiento original para poder revertir.
+ * corregirLote: mueve TODOS los animales activos que actualmente están en un
+ * potrero hacia un nuevo potrero destino, en UNA sola transacción Dexie.
+ * Útil cuando un movimiento masivo se hizo al potrero equivocado.
  */
-export async function revertirMovimiento(db, movimientoClientId, { fecha, detalle } = {}) {
+export async function corregirLote(db, { potrero_origen_id, potrero_destino_id, fecha, detalle }) {
+  if (!potrero_origen_id) {
+    throw new Error('El potrero origen es obligatorio.');
+  }
+  if (!potrero_destino_id) {
+    throw new Error('El potrero destino es obligatorio.');
+  }
+  if (potrero_destino_id === potrero_origen_id) {
+    throw new Error('El potrero destino debe ser distinto del potrero de origen.');
+  }
+
+  const animales = await db.animales
+    .filter((a) => a.potrero_actual_id === potrero_origen_id && a.estado_vida === 'activo' && a.deleted_at == null)
+    .toArray();
+
+  if (animales.length === 0) {
+    throw new Error('No hay animales activos en ese potrero.');
+  }
+
   return db.transaction('rw', db.movimientos, db.animales, db.outbox, async () => {
-    const original = await db.movimientos.get(movimientoClientId);
-    if (!original) {
-      throw new Error('Movimiento no encontrado.');
+    let moved = 0;
+    for (const animal of animales) {
+      await create(db, 'movimientos', {
+        animal_id: animal.client_id,
+        potrero_origen_id,
+        potrero_destino_id,
+        fecha,
+        detalle: detalle ?? null,
+      });
+      await update(db, 'animales', animal.client_id, { potrero_actual_id: potrero_destino_id });
+      moved++;
     }
-    if (original.deleted_at != null) {
-      throw new Error('Movimiento ya fue eliminado.');
-    }
-    if (original.revertido_en) {
-      throw new Error('Este movimiento ya fue revertido.');
-    }
-    if (original.potrero_origen_id == null) {
-      throw new Error('No se puede revertir un movimiento de alta inicial (sin potrero de origen).');
-    }
-
-    const animal = await db.animales.get(original.animal_id);
-    if (!animal) {
-      throw new Error('El animal ya no existe.');
-    }
-    if (animal.potrero_actual_id !== original.potrero_destino_id) {
-      throw new Error(
-        'El animal ya no está en el potrero destino de este movimiento; no se puede revertir automáticamente.'
-      );
-    }
-
-    const revertDate = fecha || new Date().toISOString().slice(0, 10);
-
-    const inverso = await create(db, 'movimientos', {
-      animal_id: original.animal_id,
-      potrero_origen_id: original.potrero_destino_id,
-      potrero_destino_id: original.potrero_origen_id,
-      fecha: revertDate,
-      detalle: detalle ?? `Revertido del movimiento del ${original.fecha}`,
-    });
-
-    await update(db, 'movimientos', movimientoClientId, {
-      revertido_en: new Date().toISOString(),
-    });
-
-    await update(db, 'animales', original.animal_id, {
-      potrero_actual_id: original.potrero_origen_id,
-    });
-
-    return inverso;
+    return moved;
   });
 }
 
@@ -142,7 +130,7 @@ export function useMovimientoMutations(db = defaultDb) {
     () => ({
       registrarMovimiento: (data) => registrarMovimiento(db, data),
       registrarMovimientoBatch: (data) => registrarMovimientoBatch(db, data),
-      revertirMovimiento: (movimientoClientId, opts) => revertirMovimiento(db, movimientoClientId, opts),
+      corregirLote: (data) => corregirLote(db, data),
     }),
     [db]
   );

@@ -41,36 +41,6 @@
   margin-top: var(--space-1);
 }
 
-.movimiento-historial__badge {
-  display: inline-block;
-  margin-left: var(--space-2);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-secondary);
-  background: var(--bg-surface-alt, #f0f0f0);
-  border-radius: var(--radius-sm);
-  padding: 1px 6px;
-  vertical-align: middle;
-}
-
-.movimiento-historial__revert {
-  border: 1px solid var(--border-color);
-  background: transparent;
-  color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-  padding: 2px 8px;
-  font-size: 11px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.movimiento-historial__revert:hover {
-  color: var(--status-danger, #dc3545);
-  border-color: var(--status-danger, #dc3545);
-}
-
 .movimiento-historial__status {
   font-size: 13px;
   color: var(--text-secondary);

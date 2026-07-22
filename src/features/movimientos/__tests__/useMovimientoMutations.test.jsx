@@ -3,7 +3,7 @@ import { act } from '@testing-library/react';
 import { randomUUID } from 'node:crypto';
 import { createDb } from '../../../sync/db.js';
 import { create, update } from '../../../sync/writes.js';
-import { registrarMovimiento, revertirMovimiento } from '../useMovimientoMutations.js';
+import { registrarMovimiento, corregirLote } from '../useMovimientoMutations.js';
 
 function freshDb() {
   return createDb(`test_${randomUUID()}`);
@@ -127,7 +127,7 @@ describe('registrarMovimiento', () => {
   });
 });
 
-describe('revertirMovimiento', () => {
+describe('corregirLote', () => {
   let db;
   beforeEach(() => {
     db = freshDb();
@@ -136,88 +136,125 @@ describe('revertirMovimiento', () => {
     await dropDb(db);
   });
 
-  async function setupWithMovement() {
-    const origen = await create(db, 'potreros', { nombre: 'Morones' });
-    const destino = await create(db, 'potreros', { nombre: 'El Jagüey' });
-    const animal = await create(db, 'animales', {
-      arete_local: '300', categoria: 'cria', potrero_actual_id: origen.client_id,
+  async function setupLote() {
+    const potreroMalo = await create(db, 'potreros', { nombre: 'Malo' });
+    const potreroBueno = await create(db, 'potreros', { nombre: 'Bueno' });
+    const a1 = await create(db, 'animales', {
+      arete_local: '1', categoria: 'vaca', potrero_actual_id: potreroMalo.client_id, estado_vida: 'activo',
     });
-    const mov = await registrarMovimiento(db, {
-      animal_id: animal.client_id,
-      potrero_destino_id: destino.client_id,
-      fecha: '2026-07-01',
+    const a2 = await create(db, 'animales', {
+      arete_local: '2', categoria: 'vaca', potrero_actual_id: potreroMalo.client_id, estado_vida: 'activo',
+    });
+    const a3 = await create(db, 'animales', {
+      arete_local: '3', categoria: 'vaca', potrero_actual_id: potreroMalo.client_id, estado_vida: 'muerto',
     });
     await db.outbox.clear();
-    return { origen, destino, animal, mov };
+    return { potreroMalo, potreroBueno, a1, a2, a3 };
   }
 
-  it('crea un movimiento inverso y marca el original como revertido', async () => {
-    const { origen, destino, animal, mov } = await setupWithMovement();
+  it('mueve todos los animales activos de un potrero a otro', async () => {
+    const { potreroMalo, potreroBueno, a1, a2 } = await setupLote();
 
-    const inverso = await revertirMovimiento(db, mov.client_id, { fecha: '2026-07-15' });
+    const moved = await corregirLote(db, {
+      potrero_origen_id: potreroMalo.client_id,
+      potrero_destino_id: potreroBueno.client_id,
+      fecha: '2026-07-22',
+    });
 
-    expect(inverso.animal_id).toBe(animal.client_id);
-    expect(inverso.potrero_origen_id).toBe(destino.client_id);
-    expect(inverso.potrero_destino_id).toBe(origen.client_id);
-    expect(inverso.fecha).toBe('2026-07-15');
-
-    const original = await db.movimientos.get(mov.client_id);
-    expect(original.revertido_en).toBeTruthy();
-
-    const animalActual = await db.animales.get(animal.client_id);
-    expect(animalActual.potrero_actual_id).toBe(origen.client_id);
+    expect(moved).toBe(2);
+    expect((await db.animales.get(a1.client_id)).potrero_actual_id).toBe(potreroBueno.client_id);
+    expect((await db.animales.get(a2.client_id)).potrero_actual_id).toBe(potreroBueno.client_id);
   });
 
-  it('encola 2 ops: insert movimiento inverso + update original (revertido_en)', async () => {
-    const { mov } = await setupWithMovement();
-
-    await revertirMovimiento(db, mov.client_id);
-
-    const ops = await db.outbox.toArray();
-    const insertOp = ops.find((o) => o.op === 'insert' && o.entity === 'movimientos');
-    const updateOp = ops.find((o) => o.op === 'update' && o.entity === 'movimientos');
-    expect(insertOp).toBeTruthy();
-    expect(updateOp).toBeTruthy();
-    expect(updateOp.client_id).toBe(mov.client_id);
-    expect(updateOp.payload.revertido_en).toBeTruthy();
-  });
-
-  it('si el animal ya no está en el destino, lanza error', async () => {
-    const { destino, animal, mov } = await setupWithMovement();
-    await update(db, 'animales', animal.client_id, { potrero_actual_id: null });
-
-    await expect(
-      revertirMovimiento(db, mov.client_id)
-    ).rejects.toThrow(/ya no está en el potrero destino/);
-  });
-
-  it('si el movimiento ya fue revertido, lanza error', async () => {
-    const { mov } = await setupWithMovement();
-    await revertirMovimiento(db, mov.client_id);
-
-    await expect(
-      revertirMovimiento(db, mov.client_id)
-    ).rejects.toThrow(/ya fue revertido/);
-  });
-
-  it('si el movimiento no existe, lanza error', async () => {
-    await expect(
-      revertirMovimiento(db, 'no-existe')
-    ).rejects.toThrow(/no encontrado/);
-  });
-
-  it('si el movimiento tiene origen NULL (alta), no permite revertir', async () => {
-    const destino = await create(db, 'potreros', { nombre: 'El Salto' });
-    const animal = await create(db, 'animales', { arete_local: '10', categoria: 'vaca' });
-    const mov = await registrarMovimiento(db, {
-      animal_id: animal.client_id,
-      potrero_destino_id: destino.client_id,
-      fecha: '2026-07-01',
+  it('skipea animales muertos/inactivos (lanza error si no quedan activos)', async () => {
+    const potreroMalo = await create(db, 'potreros', { nombre: 'Malo2' });
+    const potreroBueno = await create(db, 'potreros', { nombre: 'Bueno2' });
+    await create(db, 'animales', {
+      arete_local: '3', categoria: 'vaca', potrero_actual_id: potreroMalo.client_id, estado_vida: 'muerto',
     });
     await db.outbox.clear();
 
     await expect(
-      revertirMovimiento(db, mov.client_id)
-    ).rejects.toThrow(/No se puede revertir/);
+      corregirLote(db, {
+        potrero_origen_id: potreroMalo.client_id,
+        potrero_destino_id: potreroBueno.client_id,
+        fecha: '2026-07-22',
+      })
+    ).rejects.toThrow(/No hay animales activos/);
+  });
+
+  it('mezcla de activos y muertos: solo mueve los activos', async () => {
+    const potreroMalo = await create(db, 'potreros', { nombre: 'Mix' });
+    const potreroBueno = await create(db, 'potreros', { nombre: 'Bueno3' });
+    const vivo = await create(db, 'animales', {
+      arete_local: 'v1', categoria: 'vaca', potrero_actual_id: potreroMalo.client_id, estado_vida: 'activo',
+    });
+    const muerto = await create(db, 'animales', {
+      arete_local: 'm1', categoria: 'vaca', potrero_actual_id: potreroMalo.client_id, estado_vida: 'muerto',
+    });
+    await db.outbox.clear();
+
+    const moved = await corregirLote(db, {
+      potrero_origen_id: potreroMalo.client_id,
+      potrero_destino_id: potreroBueno.client_id,
+      fecha: '2026-07-22',
+    });
+
+    expect(moved).toBe(1);
+    expect((await db.animales.get(vivo.client_id)).potrero_actual_id).toBe(potreroBueno.client_id);
+    expect((await db.animales.get(muerto.client_id)).potrero_actual_id).toBe(potreroMalo.client_id);
+  });
+
+  it('encola ops: N inserts movimientos + N updates animales', async () => {
+    const { potreroMalo, potreroBueno } = await setupLote();
+
+    await corregirLote(db, {
+      potrero_origen_id: potreroMalo.client_id,
+      potrero_destino_id: potreroBueno.client_id,
+      fecha: '2026-07-22',
+    });
+
+    const ops = await db.outbox.toArray();
+    const insertOps = ops.filter((o) => o.op === 'insert' && o.entity === 'movimientos');
+    const updateOps = ops.filter((o) => o.op === 'update' && o.entity === 'animales');
+    expect(insertOps).toHaveLength(2);
+    expect(updateOps).toHaveLength(2);
+  });
+
+  it('lanza error si origen == destino', async () => {
+    const potrero = await create(db, 'potreros', { nombre: 'X' });
+
+    await expect(
+      corregirLote(db, {
+        potrero_origen_id: potrero.client_id,
+        potrero_destino_id: potrero.client_id,
+        fecha: '2026-07-22',
+      })
+    ).rejects.toThrow(/distinto del potrero de origen/);
+  });
+
+  it('lanza error si no hay animales activos en el potrero origen', async () => {
+    const potreroMalo = await create(db, 'potreros', { nombre: 'Vacío' });
+    const potreroBueno = await create(db, 'potreros', { nombre: 'Bueno' });
+
+    await expect(
+      corregirLote(db, {
+        potrero_origen_id: potreroMalo.client_id,
+        potrero_destino_id: potreroBueno.client_id,
+        fecha: '2026-07-22',
+      })
+    ).rejects.toThrow(/No hay animales activos/);
+  });
+
+  it('lanza error si no se elige destino', async () => {
+    const potrero = await create(db, 'potreros', { nombre: 'X' });
+
+    await expect(
+      corregirLote(db, {
+        potrero_origen_id: potrero.client_id,
+        potrero_destino_id: null,
+        fecha: '2026-07-22',
+      })
+    ).rejects.toThrow(/potrero destino es obligatorio/);
   });
 });

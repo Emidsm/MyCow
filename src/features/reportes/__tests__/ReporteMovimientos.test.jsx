@@ -46,8 +46,8 @@ describe('ReporteMovimientos', () => {
     renderWithRouter(<ReporteMovimientos db={db} />);
     const rows = await screen.findAllByRole('row');
     expect(rows.length).toBe(2);
-    expect(screen.getByText('A')).toBeInTheDocument();
-    expect(screen.getByText('B')).toBeInTheDocument();
+    expect(screen.getAllByText('A').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('B').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByTitle('Ver aretes')).toBeInTheDocument();
   });
 
